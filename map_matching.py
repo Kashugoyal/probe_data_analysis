@@ -16,8 +16,6 @@ probe_data=[]
 link_data=[]
 
 
-dist=[]
-link_id = []
 
 
 
@@ -83,22 +81,25 @@ def distance(p_x, p_y, line):
   return p.distance(line)
 
 
-def search_link():
+def search_link(num):
+  '''
+  arguments
+   num: The probe_data point in the probe_data array.
+  This function takes in one probe point and does the following:
+   1. Taking one link at a time, it filters out the links whose shape points are not within a specified range
+   2. For the selected ink, it buils a linear approximation, considering all shape points and calculates the
+   minimum distance of the probe point from the link. 
+   3. The link ID and the distance from that link is stored in respective arrays.
 
-  # for item in link_data:
-  #     if abs(item.reference_node.latitude - probe_data[200].latitude) < 0.1 and abs(item.reference_node.longitude - probe_data[200].longitude) < 0.1:
-  #       l = line([(item.reference_node.latitude, item.reference_node.longitude), (item.non_reference_node.latitude, item.non_reference_node.longitude)])
-  #       dist.append(distance(probe_data[200].latitude, probe_data[200].longitude, l))
-  #       link_id.append(item.linkPVID)
-  #     else:
-  #       continue
-
-
+  Call this function recusrsively to evaluate multiple probe points.
+  '''
+  dist=[]
+  link_id = []
   for item in link_data:
     flag = 0
     line_points=[]
     for pt in item.shape_points:
-      if abs(pt.latitude - probe_data[200].latitude) < 0.01 and abs(pt.longitude - probe_data[200].longitude) < 0.01:
+      if abs(pt.latitude - probe_data[num].latitude) < 0.01 and abs(pt.longitude - probe_data[num].longitude) < 0.01:
         flag = 1
       else:
         continue
@@ -107,10 +108,11 @@ def search_link():
       for pt in item.shape_points:
         line_points.append((pt.latitude,pt.longitude))
       link_line = line(line_points)
-      dist.append(distance(probe_data[200].latitude, probe_data[200].longitude, link_line))
+      dist.append(distance(probe_data[num].latitude, probe_data[num].longitude, link_line))
     else:
       continue
-  # return link_id, dist
+  out = sorted(zip(link_id,dist), key=lambda x:x[1])
+  return out
 
 
 
@@ -121,15 +123,12 @@ def main():
   print 'The number of links is ' ,len(link_data)
   print max(item.length for item in link_data)
   print min(item.length for item in link_data)
-  # print sorted(item2.length for item2 in link_data)[-10:]
   print probe_data[200].latitude, probe_data[200].longitude
 
+  out = search_link(200)
 
-  search_link()
-
-
-  print len(link_id), len(dist)
-  out = sorted(zip(link_id,dist), key=lambda x:x[1])
+  print len(out)
+  
   for x,y in out:
     print x,y
     # print item

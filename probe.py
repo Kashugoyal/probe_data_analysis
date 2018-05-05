@@ -7,7 +7,7 @@ class Probe():
     altitude=0
     speed=0
     heading=0
-    links = []
+    out = []
 
 
     def __init__(self, row):
