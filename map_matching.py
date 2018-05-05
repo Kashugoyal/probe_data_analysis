@@ -81,10 +81,11 @@ def distance(p_x, p_y, line):
   return p.distance(line)
 
 
-def search_link(num):
+def search_link(num, precision = 0.01):
   '''
   arguments
    num: The probe_data point in the probe_data array.
+   precision: size of the filter box, 2nd decimal places corresponds to around 1 Km 
   This function takes in one probe point and does the following:
    1. Taking one link at a time, it filters out the links whose shape points are not within a specified range
    2. For the selected ink, it buils a linear approximation, considering all shape points and calculates the
@@ -99,7 +100,7 @@ def search_link(num):
     flag = 0
     line_points=[]
     for pt in item.shape_points:
-      if abs(pt.latitude - probe_data[num].latitude) < 0.01 and abs(pt.longitude - probe_data[num].longitude) < 0.01:
+      if abs(pt.latitude - probe_data[num].latitude) < precision and abs(pt.longitude - probe_data[num].longitude) < precision:
         flag = 1
       else:
         continue
