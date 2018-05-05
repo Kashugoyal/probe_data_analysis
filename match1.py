@@ -9,7 +9,6 @@ y=[]
 x1=[]
 y1=[]
 
-
 def probe():
   with open('../probe_data_map_matching/Partition6467ProbePoints.csv', 'rb') as csvfile:
       spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
@@ -38,7 +37,6 @@ def link():
 
           x.append(j[0])
           y.append(j[1])
-          d+=1
           print "ref ",i," nref", j, d
   plt.scatter(x,y)
   plt.show()
