@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import probe
 import link
+import link_dist
 from shapely.geometry import LineString as line, Point as point
 
 x=[]
@@ -113,6 +114,7 @@ def search_link(num, precision = 0.01):
     else:
       continue
   out = sorted(zip(link_id,dist), key=lambda x:x[1])
+  probe_data[num].update_link_info(out)
   return out
 
 

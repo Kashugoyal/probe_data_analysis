@@ -1,3 +1,5 @@
+import link_dist
+
 class Probe():
     sampleID=0
     dateTime=""
@@ -7,7 +9,7 @@ class Probe():
     altitude=0
     speed=0
     heading=0
-    out = []
+    link_info = []
 
 
     def __init__(self, row):
@@ -19,4 +21,8 @@ class Probe():
         self.altitude=row[5]
         self.speed=row[6]
         self.heading=row[7]
-        
+        self.link_info = []
+
+    def update_link_info(self, mat):
+      for x in mat:
+        self.link_info.append(link_dist.link_dist(x))
