@@ -28,7 +28,7 @@ class Link():
         self.linkPVID=row[0]
         self.refNodeID=row[1]
         self.nrefNodeID=row[2]
-        self.length=row[3]
+        self.length=float(row[3])
         self.functionalClass=row[4]
         self.directionOfTravel=row[5]
         self.speedCategory=row[6]

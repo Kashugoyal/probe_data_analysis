@@ -3,6 +3,6 @@ class Node():
     longitude=0#B
 
     def __init__(self, data):
-        self.latitude=data.split("/")[0]
-        self.longitude=data.split("/")[1]
+        self.latitude=float(data.split("/")[0])
+        self.longitude=float(data.split("/")[1])
 

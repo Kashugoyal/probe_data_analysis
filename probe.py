@@ -7,13 +7,16 @@ class Probe():
     altitude=0
     speed=0
     heading=0
+    links = []
+
 
     def __init__(self, row):
-        self.sampleID=row[0]
+        self.sampleID=int(row[0])
         self.dateTime=row[1]
         self.sourceCode=row[2]
-        self.latitude=row[3]
-        self.longitude=row[4]
+        self.latitude=float(row[3])
+        self.longitude=float(row[4])
         self.altitude=row[5]
         self.speed=row[6]
         self.heading=row[7]
+        
