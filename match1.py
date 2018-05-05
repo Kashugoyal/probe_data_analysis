@@ -2,6 +2,7 @@
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
+from shapely.geometry import LineString as line, Point as point
 
 x=[]
 y=[]
@@ -34,12 +35,17 @@ def link():
           # x.append(i[0])
           # y.append(i[1])
           j = a[-1].split('/')
-
           x.append(j[0])
           y.append(j[1])
           print "ref ",i," nref", j, d
   plt.scatter(x,y)
   plt.show()
+
+
+def distance(l, p):
+  # l = line([(1, 1), (-1,1)])
+  # p = point(0,0)
+  return point.distance(line)
 
 
 
