@@ -76,10 +76,11 @@ def read_link():
           link_data.append(link_obj)
 
 
-def distance(p_x, p_y, line):
+def distance(p_x, p_y, line_points):
   # l = line([(1, 1), (-1,1)])
+  link_line = line(line_points)
   p = point(p_x,p_y)
-  return p.distance(line)
+  return p.distance(link_line)
 
 
 def search_link(num, precision = 0.01):
@@ -92,7 +93,6 @@ def search_link(num, precision = 0.01):
    2. For the selected ink, it buils a linear approximation, considering all shape points and calculates the
    minimum distance of the probe point from the link. 
    3. The link ID and the distance from that link is stored in respective arrays.
-
   Call this function recusrsively to evaluate multiple probe points.
   '''
   dist=[]
@@ -109,8 +109,7 @@ def search_link(num, precision = 0.01):
       link_id.append(item.linkPVID)
       for pt in item.shape_points:
         line_points.append((pt.latitude,pt.longitude))
-      link_line = line(line_points)
-      dist.append(distance(probe_data[num].latitude, probe_data[num].longitude, link_line))
+      dist.append(distance(probe_data[num].latitude, probe_data[num].longitude, line_points))
     else:
       continue
   out = sorted(zip(link_id,dist), key=lambda x:x[1])
@@ -132,8 +131,8 @@ def main():
 
   print len(out)
   
-  for x,y in out:
-    print x,y
+  # for x,y in out:
+    # print x,y
     # print item
   # for idd, dis  in zip(link_id, dist):
     # print idd, dis
