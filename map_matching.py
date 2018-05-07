@@ -306,7 +306,7 @@ def main():
 
   print 'The number of links is ' ,len(link_data)
   probe_data_length=len(probe_data)
-  # min_link=link_data[0]
+  min_link=link_data[0]
   for probe_index in range(probe_data_length):
       print probe_index,'/',probe_data_length
       input_point=probe_data[probe_index]
@@ -320,7 +320,7 @@ def main():
 
       min=100000
       min_linkId=0
-      min_link=link_data[0]
+
       for link_id,dist in out:
         link=next((x for x in link_data if x.linkPVID == link_id), None)
         links_plot.append(link)
@@ -347,7 +347,7 @@ def main():
       #         matched_data.append(match_obj)
 
 
-  # plot_point_n_links_highlight(input_point,links_plot,minlink)
+  plot_point_n_links_highlight(input_point,links_plot,min_link)
 
   sys.exit()
   fileObject = open('matched_points', 'wb')
