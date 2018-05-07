@@ -2,3 +2,5 @@
 *.csv
 */
 *.txt
+!Partition6467MatchedPoints.csv
+!Partition6467Slope_ComparisonPoints.csv
