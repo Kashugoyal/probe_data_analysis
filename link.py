@@ -47,7 +47,7 @@ class Link():
         self.shapeInfo=row[14]
         if len(row)>15:
             self.curvatureInfo=row[15]
-        if len(row)>16 and row[16]!='':
+        if len(row)>16:
             self.slopeInfo=row[16]
         self.shape_points=[]
         self.angles = []

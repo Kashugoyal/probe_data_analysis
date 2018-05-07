@@ -9,6 +9,8 @@ from shapely.geometry import LineString as line, Point as point
 import math
 import matched_point
 import pickle
+import write_data
+import sys
 from numpy.polynomial import Polynomial
 
 x=[]
@@ -37,7 +39,7 @@ def read_probe():
 
             # print 'No=',i,'latitude=',probe_obj.latitude,'longitude=', probe_obj.longitude
             i=i+1
-            if i>200:
+            if i>100:
                 break
             # print '\n'
 
@@ -144,6 +146,24 @@ def plot_point_n_links(pnt,links):
     # plt.xlim(xmin=0)
     # plt.show()
 
+def plot_point_n_links_highlight(pnt,links,minlink):
+
+    for link in links:
+        lon = []
+        lat = []
+        for shapepoint in link.shape_points:
+
+            lon.append(shapepoint.longitude)
+            lat.append(shapepoint.latitude)
+        plt.plot(lon, lat, 'ro-')
+    lon = []
+    lat = []
+    for shapepoint in minlink.shape_points:
+
+        lon.append(shapepoint.longitude)
+        lat.append(shapepoint.latitude)
+    plt.plot(lon, lat, 'ro-',color='green')
+    plt.plot(pnt.longitude, pnt.latitude, 'ro-', color='blue')
 def distance_calc(node1,node2):
     x1=node1.longitude
     x2=node2.longitude
@@ -254,7 +274,7 @@ def slope_cal(link_obj,matched_array):
 #       #         matched_data.append(match_obj)
 #
 #
-#       # plot_point_n_links(input_point,links_plot)
+      # plot_point_n_links(input_point,links_plot)
 #
 #   fileObject = open('matched_points', 'wb')
 #   pickle.dump(matched_data, fileObject)
@@ -275,13 +295,18 @@ def distance_meters(lat1, lon1, lat2, lon2):
 
 def main():
   read_probe()
-
-
-
   read_link()
+
+#Readdata directly from dump
+  # fileObject = open('probe_data', 'rb')
+  # probe_data = pickle.load(fileObject)
+  #
+  # fileObject = open('link_data', 'rb')
+  # link_data = pickle.load(fileObject)
 
   print 'The number of links is ' ,len(link_data)
   probe_data_length=len(probe_data)
+  # min_link=link_data[0]
   for probe_index in range(probe_data_length):
       print probe_index,'/',probe_data_length
       input_point=probe_data[probe_index]
@@ -322,13 +347,17 @@ def main():
       #         matched_data.append(match_obj)
 
 
-      # plot_point_n_links(input_point,links_plot)
+  # plot_point_n_links_highlight(input_point,links_plot,minlink)
 
+  sys.exit()
   fileObject = open('matched_points', 'wb')
   pickle.dump(matched_data, fileObject)
 
   print 'Matched points length=',len(matched_data)
   print 'Probe points length=', len(probe_data)
+
+  # data = write_data.read_dump()
+  # write_data.write_csv(data)
 
 
 def calculate_slopes():
@@ -339,23 +368,16 @@ def calculate_slopes():
         slope=slope_cal(link,matched_array)
         link.calculated_slope=slope
 
-def write_to_csv():
-    read_link()
-    r=[]
-    i=0
-    for link in link_data:
-        a=[link.linkPVID +','+link.refNodeID +','+link.nrefNodeID]
-        r.append(a)
-        i=i+1
-        if i>100:
-            break
-    with open('slope.csv', 'wb') as myfile:
-        wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
-        wr.writerow(r)
-    print 'Done'
-
+def write_slope_csv():
+    with open('Partition6467Slope_ComparisonPoints.csv','wb') as out:
+        writer = csv.writer(out, delimiter=',',quotechar='|')
+        # sampleID, dateTime, sourceCode, latitude, longitude, altitude, speed, heading, linkPVID, direction, distFromRef, distFromLink
+        for link in link_data:
+            row = link.linkPVID,link.slopeInfo,link.calculated_slope
+            writer.writerow(row)
+    print "File written !"
 
 if __name__=="__main__":
-  # main()
-  #calculate_slopes()
-  write_to_csv()
+  main()
+  calculate_slopes()
+  write_slope_csv()
