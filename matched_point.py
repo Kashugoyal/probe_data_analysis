@@ -1,4 +1,5 @@
 import link_dist
+import probe
 
 class Matched_point():
     sampleID=0
