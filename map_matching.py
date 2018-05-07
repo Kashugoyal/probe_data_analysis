@@ -37,7 +37,7 @@ def read_probe():
 
             # print 'No=',i,'latitude=',probe_obj.latitude,'longitude=', probe_obj.longitude
             i=i+1
-            if i>2000:
+            if i>200:
                 break
             # print '\n'
 
@@ -152,20 +152,24 @@ def distance_calc(node1,node2):
     return math.sqrt((x1-x2)**2+(y1-y2)**2)
 
 
-def slope_cal(link_obj):
+def slope_cal(link_obj,matched_array):
   '''
   argument:
     link_obj : The link object
   '''
-  x = y =z= dist = [] 
-  for item in matched_data:
+  x =[]
+  y =[]
+  z= []
+  dist = []
+  for item in matched_array:
     if item.linkPVID == link_obj.linkPVID:
       x.append(item.latitude)
       y.append(item.longitude)
       z.append(item.altitude)
+      dist.append(item.distFromRef)
 
-  x2 = link_obj.reference_node.longitude
-  y2 = link_obj.reference_node.latitude
+  y2 = link_obj.reference_node.longitude
+  x2 = link_obj.reference_node.latitude
   '''
   x1,y1 = np.array(x), np.array(y)
   p = Polynomial.fit(x1, y1, 4)
@@ -185,74 +189,90 @@ def slope_cal(link_obj):
   slope_ref = (z[i+1] - x[i])
   '''
   # searching for the point closest to ref node and getting its index in array x
-  for a,b in zip(x,y):
-    dist.append(math.sqrt((a-x2)**2+(b-y2)**2))
-  out = sorted(zip(x,y,z,dist), key=lambda x:x[2])
-  # x_cl, y_cl, z_cl, dist_cl = out[0]
-  slope_ref = (out[1][2] - out[2][2])/(math.sqrt((out[1][0] - out[0][0])**2+(out[1][1]-out[0][1])**2))
-  return slope_ref
+  # for a,b in zip(x,y):
+  #   i=a-x2
+  #   dist.append(math.sqrt((a-x2)**2+(b-y2)**2))
+  out = sorted(zip(x,y,z,dist), key=lambda x:x[3])
+  slope_ref=0
+  if len(out)>1:
+      # x_cl, y_cl, z_cl, dist_cl = out[0]
+      lat1=float(out[-1][0])
+      lon1= float(out[-1][1])
+      lat2=float(out[0][0])
+      lon2=float(out[0][1])
+      distance=distance_meters(lat1, lon1, lat2, lon2)
+      # slope_ref = (float(out[-1][2]) - float(out[0][2]))/(math.sqrt((float(out[-1][0]) - float(out[0][0]))**2+(float(out[-1][1])-float(out[0][1]))**2))
+      slope_ref = (float(out[-1][2]) - float(out[0][2]))/distance
+
+  return slope_ref# def main():
+#   read_probe()
+#
+#
+#
+#   read_link()
+#
+#   print 'The number of links is ' ,len(link_data)
+#   probe_data_length=len(probe_data)
+#   for i, probe in enumerate(probe_data):
+#       print i,'/',len(probe_data)
+#       # input_point=probe_data[probe_index]
+#       # print input_point.latitude, input_point.longitude
+#
+#       out = search_link(i)
+#
+#       print len(out)
+#
+#       links_plot=[]
+#
+#       min=100000
+#       min_linkId=0
+#       min_link=link_data[0]
+#       for link_id,dist in out:
+#
+#         link=next((x for x in link_data if x.linkPVID == link_id), None)
+#         links_plot.append(link)
+#         heading_diff=calculate_heading_diff(input_point,link)
+#         dscore=dist*100000
+#         hscore=heading_diff/10
+#         score=dscore+hscore
+#
+#         # print 'Score=',score
+#         if score<min:
+#             min=score
+#             min_linkId=link_id
+#             min_link=link
+#         # plot_point_n_links(input_point, [link])
+#       dfromref=distance_calc(min_link.reference_node,input_point)
+#       match_obj = matched_point.Matched_point(input_point,min_linkId,'F',dfromref,dist)
+#       matched_data.append(match_obj)
+#
+#       # for link_id, dist in out:
+#       #     if link_id==min_linkId:
+#       #         link = next((x for x in link_data if x.linkPVID == link_id), None)
+#       #         dfromref=distance_calc(link.reference_node,input_point)
+#       #         match_obj = matched_point.Matched_point(input_point,link_id,'F',dfromref,dist)
+#       #         matched_data.append(match_obj)
+#
+#
+#       # plot_point_n_links(input_point,links_plot)
+#
+#   fileObject = open('matched_points', 'wb')
+#   pickle.dump(matched_data, fileObject)
+#
+#   print 'Matched points length=',len(matched_data)
+#   print 'Probe points length=', len(probe_data)
+
+#distance calculation using Haversine formula
+def distance_meters(lat1, lon1, lat2, lon2):
+    R = 6378.137; # Radius of earth in KM
+    dLat = lat2 * 3.14 / 180 - lat1 * 3.14 / 180
+    dLon = lon2 * 3.14 / 180 - lon1 * 3.14 / 180
+    a = math.sin(dLat / 2) * math.sin(dLat / 2) +math.cos(lat1 * 3.14 / 180) * math.cos(lat2 * 3.14 / 180) *math.sin(dLon / 2) * math.sin(dLon / 2)
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
+    d = R * c;
+    return d * 1000# meters
 
 
-def main():
-  read_probe()
-
-
-
-  read_link()
-
-  print 'The number of links is ' ,len(link_data)
-  probe_data_length=len(probe_data)
-  for i, probe in enumerate(probe_data):
-      print i,'/',len(probe_data)
-      # input_point=probe_data[probe_index]
-      # print input_point.latitude, input_point.longitude
-
-      out = search_link(i)
-
-      print len(out)
-
-      links_plot=[]
-
-      min=100000
-      min_linkId=0
-      min_link=link_data[0]
-      for link_id,dist in out:
-        
-        link=next((x for x in link_data if x.linkPVID == link_id), None)
-        links_plot.append(link)
-        heading_diff=calculate_heading_diff(input_point,link)
-        dscore=dist*100000
-        hscore=heading_diff/10
-        score=dscore+hscore
-
-        # print 'Score=',score
-        if score<min:
-            min=score
-            min_linkId=link_id
-            min_link=link
-        # plot_point_n_links(input_point, [link])
-      dfromref=distance_calc(min_link.reference_node,input_point)
-      match_obj = matched_point.Matched_point(input_point,min_linkId,'F',dfromref,dist)
-      matched_data.append(match_obj)
-
-      # for link_id, dist in out:
-      #     if link_id==min_linkId:
-      #         link = next((x for x in link_data if x.linkPVID == link_id), None)
-      #         dfromref=distance_calc(link.reference_node,input_point)
-      #         match_obj = matched_point.Matched_point(input_point,link_id,'F',dfromref,dist)
-      #         matched_data.append(match_obj)
-
-
-      # plot_point_n_links(input_point,links_plot)
-
-  fileObject = open('matched_points', 'wb')
-  pickle.dump(matched_data, fileObject)
-
-  print 'Matched points length=',len(matched_data)
-  print 'Probe points length=', len(probe_data)
-
-
-'''
 def main():
   read_probe()
 
@@ -310,9 +330,32 @@ def main():
   print 'Matched points length=',len(matched_data)
   print 'Probe points length=', len(probe_data)
 
-'''
 
+def calculate_slopes():
+    read_link()
+    fileObject = open('matched_points', 'rb')
+    matched_array=pickle.load(fileObject)
+    for link in link_data:
+        slope=slope_cal(link,matched_array)
+        link.calculated_slope=slope
+
+def write_to_csv():
+    read_link()
+    r=[]
+    i=0
+    for link in link_data:
+        a=[link.linkPVID +','+link.refNodeID +','+link.nrefNodeID]
+        r.append(a)
+        i=i+1
+        if i>100:
+            break
+    with open('slope.csv', 'wb') as myfile:
+        wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
+        wr.writerow(r)
+    print 'Done'
 
 
 if __name__=="__main__":
-  main()
+  # main()
+  #calculate_slopes()
+  write_to_csv()

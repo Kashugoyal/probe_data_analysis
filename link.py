@@ -26,6 +26,7 @@ class Link():
     non_reference_node=None
 
     angles=[]#for comparing heading
+    calculated_slope=0
 
 
     def __init__(self, row):
@@ -46,13 +47,14 @@ class Link():
         self.shapeInfo=row[14]
         if len(row)>15:
             self.curvatureInfo=row[15]
-        if len(row)>16:
+        if len(row)>16 and row[16]!='':
             self.slopeInfo=row[16]
         self.shape_points=[]
         self.angles = []
 
         self.read_shapeInfo()
         self.calculate_heading_angles()
+        self.calculated_slope = 0
 
     def read_shapeInfo(self):
         data=self.shapeInfo.split('|')
