@@ -8,6 +8,7 @@ import link_dist
 from shapely.geometry import LineString as line, Point as point
 import math
 import matched_point
+import pickle
 
 x=[]
 y=[]
@@ -35,7 +36,7 @@ def read_probe():
 
             # print 'No=',i,'latitude=',probe_obj.latitude,'longitude=', probe_obj.longitude
             i=i+1
-            if i>1000:
+            if i>2000:
                 break
             # print '\n'
 
@@ -151,6 +152,9 @@ def distance_calc(node1,node2):
 
 def main():
   read_probe()
+
+
+
   read_link()
 
   print 'The number of links is ' ,len(link_data)
@@ -196,6 +200,10 @@ def main():
 
 
       # plot_point_n_links(input_point,links_plot)
+
+  fileObject = open('matched_points', 'wb')
+  pickle.dump(matched_data, fileObject)
+
   print 'Matched points length=',len(matched_data)
   print 'Probe points length=', len(probe_data)
 
