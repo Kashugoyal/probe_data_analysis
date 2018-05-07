@@ -1,4 +1,6 @@
 import node
+import numpy as np
+import math
 
 class Link():
     linkPVID=0#A
@@ -23,6 +25,8 @@ class Link():
     shape_points = [] #includes the nodes also
     non_reference_node=None
 
+    angles=[]#for comparing heading
+
 
     def __init__(self, row):
         self.linkPVID=row[0]
@@ -45,8 +49,10 @@ class Link():
         if len(row)>16:
             self.slopeInfo=row[16]
         self.shape_points=[]
+        self.angles = []
 
         self.read_shapeInfo()
+        self.calculate_heading_angles()
 
     def read_shapeInfo(self):
         data=self.shapeInfo.split('|')
@@ -57,3 +63,16 @@ class Link():
             obj_node=node.Node(item)
             self.shape_points.append(obj_node)
 
+    def slope(self,x1, y1, x2, y2):
+        if (x2-x1)!=0:
+            heading= np.rad2deg(math.atan((y2 - y1)/ (x2 - x1)))
+            if heading<0:
+                return 180+heading
+            return heading
+        else:
+            return 90
+
+    def calculate_heading_angles(self):
+
+        for i in range(len(self.shape_points)-1):
+            self.angles.append(self.slope(self.shape_points[i].longitude,self.shape_points[i].latitude,self.shape_points[i+1].longitude,self.shape_points[i+1].latitude))
