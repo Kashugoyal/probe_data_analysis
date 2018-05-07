@@ -1,4 +1,5 @@
 import link_dist
+import probe
 
 class Matched_point():
     sampleID=0
@@ -14,17 +15,17 @@ class Matched_point():
     distFromRef=0
     distFromLink=0
 
-    def __init__(self,probe,lID,dir,dfromref,dfromlink):
+    def __init__(self,probe,lID,dirxn,dfromref,dfromlink):
         self.sampleID=probe.sampleID
         self.dateTime=probe.dateTime
-        self.sourceCode=probe
-        self.latitude=probe
-        self.longitude=probe
+        self.sourceCode=probe.sourceCode
+        self.latitude=probe.latitude
+        self.longitude=probe.longitude
         self.altitude=probe.altitude
         self.speed=probe.speed
         self.heading=probe.heading
         self.linkPVID=lID
-        self.direction=dir
+        self.direction=dirxn
         self.distFromRef=dfromref
         self.distFromLink=dfromlink
 

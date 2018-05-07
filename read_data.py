@@ -2,8 +2,8 @@
 import csv
 import probe
 import link
-import pickle
 import sys
+from six.moves import cPickle as pickle
 
 probe_data=[]
 link_data=[]
